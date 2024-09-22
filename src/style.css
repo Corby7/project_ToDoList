@@ -1,0 +1,75 @@
+* {
+  box-sizing: border-box;
+  font-family: Helvetica, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toDo {
+  display: grid;
+  grid-template-columns: 0.5fr 2fr 3fr 1fr 1fr 0.5fr;
+  height: 60px;
+  width: 800px;
+  border: 2px solid gray;
+  border-radius: 30px;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+.toDo > * {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.toDo.expanded {
+  height: 200px; /* Increased height for expanded state */
+  grid-template-columns: 0.5fr 5fr 1fr 1fr 0.5fr; /* Define new columns */
+  grid-template-rows: 40px auto; /* Adjust rows dynamically */
+  grid-template-areas:
+    "completed title priority dueDate delete"
+    ". description description description ."; /* Full width for description */
+  align-items: center;
+}
+
+.toDo.expanded .description {
+  grid-area: description; /* Description occupies full width */
+  white-space: normal; /* Allow text wrapping */
+}
+
+#newTaskForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+h1 {
+  font-size: 22px;
+}
+
+.deleteToDo {
+  background-color: red;
+  border: none;
+  cursor: pointer;
+}
