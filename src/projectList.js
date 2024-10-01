@@ -1,12 +1,9 @@
-import Project from "./project";
-
 export default class ProjectList {
   constructor() {
     this.projects = [];
   }
 
-  addProject(name) {
-    const project = new Project(name);
+  addProject(project) {
     this.projects.push(project);
     this._notifyChange();
   }

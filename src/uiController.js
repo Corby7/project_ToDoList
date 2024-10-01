@@ -1,14 +1,16 @@
 import Task from "./task.js";
+import Project from "./project.js";
 
 export class UIController {
-  constructor(project) {
-    this.project = project;
-    this.taskListInstance = project.taskList;
+  constructor(projectList) {
+    this.projectList = projectList;
+    this.currentProject = null;
 
     this.projectTitle = document.getElementById("projectTitle");
     this.taskListElement = document.getElementById("list");
-    this.projectList = document.getElementById("projectList");
+    this.projectListElement = document.getElementById("projectList");
     this.newTaskForm = this.createTaskForm();
+    this.addProjectBtn = document.getElementById("addProject");
 
     this.newTaskForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -19,10 +21,14 @@ export class UIController {
     this.addToDoBtn.addEventListener("click", () => {
       this.toggleFormDisplay(this.newTaskForm);
     });
+
+    this.addProjectBtn.addEventListener("click", () => {
+      this.handleAddProject();
+    });
   }
 
   showProjects(projects) {
-    this.projectList.innerHTML = "";
+    this.projectListElement.innerHTML = "";
 
     projects.forEach((project, index) => {
       const listItem = document.createElement("li");
@@ -30,19 +36,22 @@ export class UIController {
       listItem.textContent = project.name;
 
       listItem.addEventListener("click", () => {
-        this.project = project;
-        this.taskListInstance = project.taskList;
-        this.showTasks(this.taskListInstance.tasks);
-        this.showProjectTitle(project.name);
-        this.highlightSelectedProject(index);
+        this.setCurrentProject(project, index);
       });
 
-      this.projectList.appendChild(listItem);
+      this.projectListElement.appendChild(listItem);
     });
   }
 
+  setCurrentProject(project, index) {
+    this.currentProject = project;
+    this.showTasks(project.taskList.tasks);
+    this.showProjectTitle(project.name);
+    this.highlightSelectedProject(index);
+  }
+
   highlightSelectedProject(selectedIndex) {
-    const projects = this.projectList.querySelectorAll(".project");
+    const projects = this.projectListElement.querySelectorAll(".project");
     projects.forEach((project, index) => {
       if (index === selectedIndex) {
         project.classList.add("selected");
@@ -146,6 +155,24 @@ export class UIController {
     this.onTaskDelete = handler;
   }
 
+  bindProjectsChanged(callback) {
+    this.projectList.bindProjectsChanged(callback);
+  }
+
+  handleAddProject() {
+    const projectName = prompt("Enter the name of the new project:");
+    if (projectName) {
+      const newProject = new Project(projectName);
+      console.log(this.projectList);
+      this.projectList.addProject(newProject);
+      this.showProjects(this.projectList.getProjects());
+      this.setCurrentProject(
+        newProject,
+        this.projectList.getProjects().length - 1
+      );
+    }
+  }
+
   handleFormSubmit() {
     const title = document.getElementById("title").value;
     const description = document.getElementById("description").value;
@@ -153,7 +180,7 @@ export class UIController {
     const priority = document.getElementById("priority").value;
 
     const newTask = new Task(title, description, dueDate, priority);
-    this.taskListInstance.addTask(newTask);
+    this.currentProject.taskList.addTask(newTask);
 
     this.newTaskForm.reset();
     this.toggleFormDisplay(this.newTaskForm);

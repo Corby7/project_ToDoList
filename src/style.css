@@ -58,6 +58,10 @@ body {
   border: none;
 }
 
+.selected {
+  font-weight: bold;
+}
+
 #addProject svg {
   height: 15px;
   width: 15px;
