@@ -4,6 +4,11 @@ export default class Project {
   constructor(name) {
     this.name = name;
     this.taskList = new TaskList();
+    this.taskList.bindTasksChanged((tasks) => {
+      if (this.onTasksChanged) {
+        this.onTasksChanged(tasks);
+      }
+    });
   }
 
   addTask(task) {
@@ -18,11 +23,7 @@ export default class Project {
     this.taskList.toggleTaskCompletion(index);
   }
 
-  getTasks() {
-    return this.taskList.tasks;
-  }
-
   bindTasksChanged(callback) {
-    this.taskList.bindTasksChanged(callback);
+    this.onTasksChanged = callback;
   }
 }
