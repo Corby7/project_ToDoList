@@ -10,19 +10,33 @@ export class UIController {
     this.taskListElement = document.getElementById("list");
     this.projectListElement = document.getElementById("projectList");
     this.newTaskForm = this.createTaskForm();
-    this.addProjectBtn = document.getElementById("addProject");
+
+    this.addToDoBtn = document.getElementById("addToDo");
+    this.addToDoBtn.addEventListener("click", () => {
+      this.toggleFormDisplay(this.newTaskForm, "task");
+    });
 
     this.newTaskForm.addEventListener("submit", (e) => {
       e.preventDefault();
       this.handleFormSubmit();
     });
 
-    this.addToDoBtn = document.getElementById("addToDo");
-    this.addToDoBtn.addEventListener("click", () => {
-      this.toggleFormDisplay(this.newTaskForm);
+    this.newTaskForm.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        this.handleFormSubmit();
+      }
     });
 
+    this.newProjectForm = this.createProjectForm();
+
+    this.addProjectBtn = document.getElementById("addProject");
     this.addProjectBtn.addEventListener("click", () => {
+      this.toggleFormDisplay(this.newProjectForm, "project");
+    });
+
+    this.newProjectForm.addEventListener("submit", (e) => {
+      e.preventDefault();
       this.handleAddProject();
     });
   }
@@ -160,10 +174,13 @@ export class UIController {
   }
 
   handleAddProject() {
-    const projectName = prompt("Enter the name of the new project:");
+    const projectNameInput = document.getElementById("projectName");
+    const projectName = projectNameInput.value;
+
     if (projectName) {
+      this.newProjectForm.reset();
+      projectNameInput.blur();
       const newProject = new Project(projectName);
-      console.log(this.projectList);
       this.projectList.addProject(newProject);
       this.showProjects(this.projectList.getProjects());
       this.setCurrentProject(
@@ -183,7 +200,29 @@ export class UIController {
     this.currentProject.taskList.addTask(newTask);
 
     this.newTaskForm.reset();
-    this.toggleFormDisplay(this.newTaskForm);
+    this.toggleFormDisplay(this.newTaskForm, "task");
+  }
+
+  createProjectForm() {
+    const form = document.createElement("form");
+    form.id = "newProjectForm";
+
+    const projectName = this.createFormField(
+      "Project Name",
+      "text",
+      "projectName"
+    );
+    form.appendChild(projectName);
+
+    projectName.addEventListener("blur", () => {
+      this.toggleFormDisplay(form, "project");
+    });
+
+    const projectHub = document.getElementById("projectHub");
+    projectHub.appendChild(form);
+
+    form.style.display = "none";
+    return form;
   }
 
   createTaskForm() {
@@ -224,7 +263,7 @@ export class UIController {
       `;
     deleteBtn.style.gridArea = "delete";
     deleteBtn.addEventListener("click", () => {
-      this.toggleFormDisplay(this.newTaskForm);
+      this.toggleFormDisplay(this.newTaskForm, "task");
     });
     form.appendChild(deleteBtn);
 
@@ -277,15 +316,32 @@ export class UIController {
     form.style.display = "none";
   }
 
-  toggleFormDisplay(form) {
-    if (form.style.display === "none" || form.style.display === "") {
-      form.style.display = "grid"; // Show the form
-      this.addToDoBtn.style.display = "none";
-      document.getElementById("title").focus();
+  toggleFormDisplay(form, type) {
+    const isTaskForm = type === "task";
+    const isProjectForm = type === "project";
+
+    const isFormHidden =
+      form.style.display === "none" || form.style.display === "";
+
+    if (isFormHidden) {
+      if (isTaskForm) {
+        form.style.display = "grid";
+        this.addToDoBtn.style.display = "none";
+        document.getElementById("title").focus();
+      } else if (isProjectForm) {
+        form.style.display = "flex";
+        this.addProjectBtn.style.display = "none";
+        document.getElementById("projectName").focus();
+      }
     } else {
-      form.style.display = "none"; // Hide the form
-      this.newTaskForm.reset();
-      this.addToDoBtn.style.display = "block";
+      form.style.display = "none";
+
+      if (isTaskForm) {
+        this.newTaskForm.reset();
+        this.addToDoBtn.style.display = "block";
+      } else if (isProjectForm) {
+        this.addProjectBtn.style.display = "block";
+      }
     }
   }
 }

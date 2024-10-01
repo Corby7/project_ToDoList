@@ -19,14 +19,11 @@ function bindProjectTasks(project) {
   uiController.bindDeleteTask((index) => project.removeTask(index));
 }
 
-// Bind the initial Inbox project
 bindProjectTasks(inboxProject);
 
-// Example task for Inbox
 const task = new Task("Test Task", "Test Description", "2024-09-30", "High");
 inboxProject.addTask(task);
 
-// Show initial projects and set the current project to Inbox
 uiController.showProjects(projectList.getProjects());
 uiController.setCurrentProject(inboxProject, 0);
 

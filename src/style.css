@@ -136,6 +136,10 @@ li {
   word-wrap: break-word;
 }
 
+#newProjectForm {
+  display: flex;
+}
+
 #newTaskForm {
   display: grid;
   width: 60vw;
