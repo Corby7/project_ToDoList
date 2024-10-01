@@ -15,8 +15,10 @@ export default class TaskList {
 
   toggleTaskCompletion(index) {
     const task = this.tasks[index];
-    task.markCompleted();
-    this._notifyChange();
+    if (task) {
+      task.toggleCompletion();
+      this._notifyChange();
+    }
   }
 
   _notifyChange() {

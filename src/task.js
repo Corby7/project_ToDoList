@@ -7,7 +7,7 @@ export default class Task {
     this.completed = false;
   }
 
-  markCompleted() {
+  toggleCompletion() {
     this.completed = !this.completed;
   }
 }

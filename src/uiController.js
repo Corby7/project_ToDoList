@@ -94,10 +94,9 @@ export class UIController {
 
       completed.innerHTML = task.completed ? checkedSVG : uncheckedSVG;
 
-      completed.addEventListener("click", () => {
-        task.toggleCompletion();
-        completed.innerHTML = task.completed ? checkedSVG : uncheckedSVG;
+      completed.addEventListener("click", (e) => {
         this.onTaskComplete(index);
+        completed.innerHTML = task.completed ? checkedSVG : uncheckedSVG;
       });
 
       const deleteBtn = document.createElement("button");
