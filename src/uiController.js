@@ -38,11 +38,28 @@ export class UIController {
       const priority = document.createElement("p");
       priority.innerText = task.priority;
 
-      const completed = document.createElement("input");
-      completed.type = "checkbox";
-      completed.checked = task.completed;
-      completed.addEventListener("change", () => {
+      const completed = document.createElement("button");
+      completed.classList.add("completedBtn");
+
+      const uncheckedSVG = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <title>circle-outline</title>
+        <path d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20Z" />
+      </svg>
+    `;
+
+      const checkedSVG = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <title>check-circle-outline</title>
+        <path d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20M16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" />
+      </svg>`;
+
+      completed.innerHTML = task.completed ? checkedSVG : uncheckedSVG;
+
+      completed.addEventListener("click", () => {
+        completed.innerHTML = task.completed ? checkedSVG : uncheckedSVG;
         this.onTaskComplete(index);
+        console.log(task.completed);
       });
 
       const deleteBtn = document.createElement("button");
@@ -162,7 +179,9 @@ export class UIController {
     submitButton.style.gridArea = "add"; // Assign to grid area for consistency
     form.appendChild(submitButton);
 
-    document.body.appendChild(form);
+    const contentDiv = document.getElementById("content");
+    contentDiv.appendChild(form);
+
     form.style.display = "none"; // Initially hide the form
     return form;
   }
@@ -170,11 +189,10 @@ export class UIController {
   createFormField(placeholderText, type, id, required = false) {
     let input;
 
-    // Check if we are creating the description field, if so, use a textarea
     if (id === "description") {
       input = document.createElement("textarea");
-      input.rows = 4; // You can set the number of rows as needed
-      input.cols = 50; // Set the width as needed
+      input.rows = 4;
+      input.cols = 50;
       input.style.resize = "vertical";
     } else {
       input = document.createElement("input");
@@ -183,7 +201,7 @@ export class UIController {
 
     input.id = id;
     input.name = id;
-    input.placeholder = placeholderText; // Set the placeholder text
+    input.placeholder = placeholderText;
     if (required) input.required = true;
 
     return input;
