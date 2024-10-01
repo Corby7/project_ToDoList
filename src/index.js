@@ -1,16 +1,27 @@
 import "./style.css";
 import { UIController } from "./uiController";
-import TaskList from "./taskList";
+
 import Task from "./task";
+import ProjectList from "./projectList";
+import Project from "./project";
 
-const taskList = new TaskList();
-const uiController = new UIController(taskList);
+const projectList = new ProjectList();
+const inboxProject = new Project("Inbox");
+projectList.addProject(inboxProject.name);
+//const taskList = inboxProject.taskList;
 
+const uiController = new UIController(inboxProject);
+
+// Example task
 const task = new Task("Test Task", "Test Description", "2024-09-30", "High");
-taskList.addTask(task);
-uiController.showTasks(taskList.tasks);
+inboxProject.addTask(task);
+uiController.showProjects(projectList.projects);
+uiController.showProjectTitle(inboxProject.name);
+uiController.showTasks(inboxProject.taskList.tasks);
 
-taskList.bindTasksChanged((tasks) => uiController.showTasks(tasks));
-
-uiController.bindCompleteTask((index) => taskList.toggleTaskCompletion(index));
-uiController.bindDeleteTask((index) => taskList.removeTask(index));
+// Bind task change handlers
+inboxProject.bindTasksChanged((tasks) => uiController.showTasks(tasks));
+uiController.bindCompleteTask((index) =>
+  inboxProject.toggleTaskCompletion(index)
+);
+uiController.bindDeleteTask((index) => inboxProject.removeTask(index));

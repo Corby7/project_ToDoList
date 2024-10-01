@@ -1,10 +1,13 @@
 import Task from "./task.js";
 
 export class UIController {
-  constructor(taskList) {
-    this.taskList = taskList;
+  constructor(project) {
+    this.project = project;
+    this.taskListInstance = project.taskList;
 
-    this.displayList = document.getElementById("list");
+    this.projectTitle = document.getElementById("projectTitle");
+    this.taskListElement = document.getElementById("list");
+    this.projectList = document.getElementById("projectList");
     this.newTaskForm = this.createTaskForm();
 
     this.newTaskForm.addEventListener("submit", (e) => {
@@ -18,8 +21,43 @@ export class UIController {
     });
   }
 
+  showProjects(projects) {
+    this.projectList.innerHTML = "";
+
+    projects.forEach((project, index) => {
+      const listItem = document.createElement("li");
+      listItem.className = "project";
+      listItem.textContent = project.name;
+
+      listItem.addEventListener("click", () => {
+        this.project = project;
+        this.taskListInstance = project.taskList;
+        this.showTasks(this.taskListInstance.tasks);
+        this.showProjectTitle(project.name);
+        this.highlightSelectedProject(index);
+      });
+
+      this.projectList.appendChild(listItem);
+    });
+  }
+
+  highlightSelectedProject(selectedIndex) {
+    const projects = this.projectList.querySelectorAll(".project");
+    projects.forEach((project, index) => {
+      if (index === selectedIndex) {
+        project.classList.add("selected");
+      } else {
+        project.classList.remove("selected");
+      }
+    });
+  }
+
+  showProjectTitle(projectName) {
+    this.projectTitle.innerText = projectName;
+  }
+
   showTasks(tasks) {
-    this.displayList.innerHTML = "";
+    this.taskListElement.innerHTML = "";
 
     tasks.forEach((task, index) => {
       const listItem = document.createElement("li");
@@ -57,9 +95,9 @@ export class UIController {
       completed.innerHTML = task.completed ? checkedSVG : uncheckedSVG;
 
       completed.addEventListener("click", () => {
+        task.toggleCompletion();
         completed.innerHTML = task.completed ? checkedSVG : uncheckedSVG;
         this.onTaskComplete(index);
-        console.log(task.completed);
       });
 
       const deleteBtn = document.createElement("button");
@@ -74,17 +112,15 @@ export class UIController {
         this.onTaskDelete(index);
       });
 
-      // Add click event to expand/collapse the list item
       listItem.addEventListener("click", (e) => {
         if (listItem.classList.contains("expanded")) {
           listItem.classList.remove("expanded");
         } else {
-          this.collapseAll(); // Collapse other expanded items
+          this.collapseAll();
           listItem.classList.add("expanded");
         }
       });
 
-      // Add elements to list item
       listItem.appendChild(completed);
       listItem.appendChild(title);
       listItem.appendChild(description);
@@ -92,8 +128,7 @@ export class UIController {
       listItem.appendChild(dueDate);
       listItem.appendChild(deleteBtn);
 
-      // Append list item to the display list
-      this.displayList.appendChild(listItem);
+      this.taskListElement.appendChild(listItem);
     });
   }
 
@@ -118,8 +153,8 @@ export class UIController {
     const dueDate = document.getElementById("dueDate").value;
     const priority = document.getElementById("priority").value;
 
-    const newTask = new Task(title, description, dueDate, priority); // Create a new Task instance
-    this.taskList.addTask(newTask); // Add the new task to the TaskList
+    const newTask = new Task(title, description, dueDate, priority);
+    this.taskListInstance.addTask(newTask);
 
     this.newTaskForm.reset();
     this.toggleFormDisplay(this.newTaskForm);
@@ -130,7 +165,7 @@ export class UIController {
     form.id = "newTaskForm";
 
     const titleField = this.createFormField("Title", "text", "title", true);
-    titleField.style.gridArea = "title"; // Assign to grid area
+    titleField.style.gridArea = "title";
     form.appendChild(titleField);
 
     const descriptionField = this.createFormField(
@@ -138,7 +173,7 @@ export class UIController {
       "textarea",
       "description"
     );
-    descriptionField.style.gridArea = "description"; // Assign to grid area
+    descriptionField.style.gridArea = "description";
     form.appendChild(descriptionField);
 
     const dueDateField = this.createFormField(
@@ -146,11 +181,11 @@ export class UIController {
       "datetime-local",
       "dueDate"
     );
-    dueDateField.style.gridArea = "dueDate"; // Assign to grid area
+    dueDateField.style.gridArea = "dueDate";
     form.appendChild(dueDateField);
 
     const priorityField = this.createFormField("Priority", "text", "priority");
-    priorityField.style.gridArea = "priority"; // Assign to grid area
+    priorityField.style.gridArea = "priority";
     form.appendChild(priorityField);
 
     const deleteBtn = document.createElement("button");
@@ -176,13 +211,13 @@ export class UIController {
             <path d="M17,13H13V17H11V13H7V11H11V7H13V11H17M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
         </svg>
     `;
-    submitButton.style.gridArea = "add"; // Assign to grid area for consistency
+    submitButton.style.gridArea = "add";
     form.appendChild(submitButton);
 
     const contentDiv = document.getElementById("content");
     contentDiv.appendChild(form);
 
-    form.style.display = "none"; // Initially hide the form
+    form.style.display = "none";
     return form;
   }
 
@@ -209,7 +244,7 @@ export class UIController {
 
   showForm(form) {
     form.style.display = "grid";
-    this.addToDoBtn.display = "none";
+    this.addToDoBtn.style.display = "none";
   }
 
   hideForm(form) {
