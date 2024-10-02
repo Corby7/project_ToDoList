@@ -21,7 +21,12 @@ function bindProjectTasks(project) {
 
 bindProjectTasks(inboxProject);
 
-const task = new Task("Test Task", "Test Description", "2024-09-30", "High");
+const task = new Task(
+  "Test Task",
+  "Test Description",
+  "2024-10-01T18:11",
+  "High"
+);
 inboxProject.addTask(task);
 
 uiController.showProjects(projectList.getProjects());
@@ -31,7 +36,6 @@ uiController.setCurrentProject(inboxProject, 0);
 projectList.bindProjectsChanged((projects) => {
   uiController.showProjects(projects);
 
-  // Ensure that every newly created project is bound
   projects.forEach((project, index) => {
     bindProjectTasks(project);
   });
